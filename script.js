@@ -7,30 +7,44 @@ const leftButton = document.getElementById('leftButton');
 const rightButton = document.getElementById('rightButton');
 
 let selectedCharacter;
-let carPosition = { x: canvas.width / 2, y: canvas.height - 100 };
-let carWidth = 50;
-let carHeight = 100;
+let carPosition = { x: canvas.width / 2, y: canvas.height - 150 };
 let roadSpeed = 5;
 let roadOffset = 0;
 let moveLeft = false;
 let moveRight = false;
 
+const carImage = new Image();
+carImage.src = 'images/car.png'; // Обновлённый путь к изображению
+
+const originalCarWidth = 613;
+const originalCarHeight = 890;
+const aspectRatio = originalCarWidth / originalCarHeight;
+
+// Установим желаемую высоту машины
+let carHeight = 150; // Например, 150 пикселей
+let carWidth = carHeight * aspectRatio; // Рассчитываем ширину на основе соотношения сторон
+
+carImage.onload = function() {
+    startGameButton.addEventListener('click', () => {
+        selectedCharacter = characterSelect.value;
+        console.log('Выбранный персонаж:', selectedCharacter);
+        characterSelectDiv.style.display = 'none'; // Скрываем выбор персонажа
+        document.getElementById('controls').style.display = 'flex'; // Показываем кнопки управления
+        gameLoop(); // Запускаем игру
+    });
+};
+
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    carPosition = { x: canvas.width / 2, y: canvas.height - carHeight - 10 };
+    carPosition = { 
+        x: (canvas.width - carWidth) / 2, // Центрируем по горизонтали
+        y: canvas.height - carHeight - 100 // Поднимаем выше, чтобы машина была над стрелками
+    };
 }
 
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
-
-startGameButton.addEventListener('click', () => {
-    selectedCharacter = characterSelect.value;
-    console.log('Выбранный персонаж:', selectedCharacter);
-    characterSelectDiv.style.display = 'none'; // Скрываем выбор персонажа
-    document.getElementById('controls').style.display = 'flex'; // Показываем кнопки управления
-    gameLoop(); // Запускаем игру
-});
 
 leftButton.addEventListener('pointerdown', () => moveLeft = true);
 leftButton.addEventListener('pointerup', () => moveLeft = false);
@@ -61,8 +75,7 @@ function drawRoad() {
 }
 
 function drawCar() {
-    ctx.fillStyle = 'red';
-    ctx.fillRect(carPosition.x, carPosition.y, carWidth, carHeight);
+    ctx.drawImage(carImage, carPosition.x, carPosition.y, carWidth, carHeight);
 }
 
 function draw() {
