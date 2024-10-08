@@ -3,10 +3,7 @@ const ctx = canvas.getContext('2d');
 const characterSelectDiv = document.getElementById('characterSelect');
 const characterSelect = document.getElementById('characters');
 const startGameButton = document.getElementById('startGame');
-const leftButton = document.getElementById('leftButton');
-const rightButton = document.getElementById('rightButton');
 
-let selectedCharacter;
 let carPosition = { x: canvas.width / 2, y: canvas.height - 150 };
 let roadSpeed = 5;
 let roadOffset = 0;
@@ -14,7 +11,7 @@ let moveLeft = false;
 let moveRight = false;
 
 const carImage = new Image();
-carImage.src = 'images/car.png'; // Обновлённый путь к изображению
+carImage.src = 'images/car.png'; // Укажите путь к вашему изображению
 
 const originalCarWidth = 613;
 const originalCarHeight = 890;
@@ -26,10 +23,9 @@ let carWidth = carHeight * aspectRatio; // Рассчитываем ширину
 
 carImage.onload = function() {
     startGameButton.addEventListener('click', () => {
-        selectedCharacter = characterSelect.value;
+        const selectedCharacter = characterSelect.value;
         console.log('Выбранный персонаж:', selectedCharacter);
         characterSelectDiv.style.display = 'none'; // Скрываем выбор персонажа
-        document.getElementById('controls').style.display = 'flex'; // Показываем кнопки управления
         gameLoop(); // Запускаем игру
     });
 };
@@ -38,18 +34,27 @@ function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     carPosition = { 
-        x: (canvas.width - carWidth) / 2, // Центрируем по горизонтали
-        y: canvas.height - carHeight - 100 // Поднимаем выше, чтобы машина была над стрелками
+        x: (canvas.width - carWidth) / 2,
+        y: canvas.height - carHeight - 100
     };
 }
 
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
-leftButton.addEventListener('pointerdown', () => moveLeft = true);
-leftButton.addEventListener('pointerup', () => moveLeft = false);
-rightButton.addEventListener('pointerdown', () => moveRight = true);
-rightButton.addEventListener('pointerup', () => moveRight = false);
+// Добавляем обработчики для нажатий на экран
+canvas.addEventListener('pointerdown', (event) => {
+    if (event.clientX < canvas.width / 2) {
+        moveLeft = true;
+    } else {
+        moveRight = true;
+    }
+});
+
+canvas.addEventListener('pointerup', () => {
+    moveLeft = false;
+    moveRight = false;
+});
 
 function update() {
     roadOffset += roadSpeed;
